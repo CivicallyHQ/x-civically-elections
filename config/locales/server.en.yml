@@ -1,0 +1,7 @@
+en:
+  election:
+    errors:
+      only_place_members_can_nominate: "Only members of a place can nominate themselves for an election in that place."
+
+  site_settings:
+    elections_close_after_hours_votes: "Close X hours after 50% of place members have voters."
