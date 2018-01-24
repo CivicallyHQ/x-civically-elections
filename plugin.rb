@@ -1,6 +1,6 @@
 # name: civically-elections-extension
 # about: Civically extension to elections plugin
-# version: 0.2
+# version: 0.1
 # authors: angus
 # url: https://github.com/civicallyhq/x-civically-elections
 
@@ -11,7 +11,7 @@ after_initialize do
     (scope.is_admin? || scope.user.trust_level >= SiteSetting.elections_min_trust_to_self_nominate.to_i)
   end
 
-  DiscourseElections::NominationController.class_eval do
+  module NominationControllerExtension
     def add
       params.require(:topic_id)
 
@@ -32,5 +32,9 @@ after_initialize do
 
       render_result(result)
     end
+  end
+
+  class DiscourseElections::NominationController
+    prepend NominationControllerExtension
   end
 end
