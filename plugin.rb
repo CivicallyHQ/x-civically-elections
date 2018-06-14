@@ -7,7 +7,14 @@
 after_initialize do
   add_to_serializer(:topic_view, :election_can_self_nominate) do
     scope.user && !scope.user.anonymous? &&
-    (scope.user.place_category_id && scope.user.place_category_id === object.topic.category_id) &&
+
+    ## is user's neighbourhood
+    ((scope.user.neighbourhood_category_id && scope.user.neighbourhood_category_id === object.topic.category_id) ||
+
+    ## or is user's town
+    (scope.user.town_category_id && scope.user.town_category_id === object.topic.category_id)) &&
+
+    ## user has suffiicent trust
     (scope.is_admin? || scope.user.trust_level >= SiteSetting.elections_min_trust_to_self_nominate.to_i)
   end
 
@@ -21,7 +28,8 @@ after_initialize do
 
       if !user || user.anonymous?
         result = { error_message: I18n.t('election.errors.only_named_user_can_self_nominate') }
-      elsif !user.place_category_id || user.place_category_id != topic.category_id
+      elsif (!user.town_category_id ||
+             (user.town_category_id != topic.category_id && user.neighbourhood_category_id != topic.category_id))
         result = { error_message: I18n.t('election.errors.only_place_members_can_nominate') }
       elsif !user.admin && user.trust_level < min_trust
         result = { error_message: I18n.t('election.errors.insufficient_trust_to_self_nominate', level: min_trust) }
