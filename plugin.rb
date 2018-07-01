@@ -4,7 +4,7 @@
 # authors: angus
 # url: https://github.com/civicallyhq/x-civically-elections
 
-after_initialize do
+DiscourseEvent.on(:elections_ready) do
   add_to_serializer(:topic_view, :election_can_self_nominate) do
     scope.user && !scope.user.anonymous? &&
 
